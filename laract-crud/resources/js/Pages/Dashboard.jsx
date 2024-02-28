@@ -3,7 +3,8 @@ import { Head, router } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 
 export default function Dashboard(props) {
-    console.log(props);
+    const newsList = props.myNews;
+    console.log(newsList);
     const [input, setInput] = useState({
         title: "",
         category: "",
@@ -48,11 +49,44 @@ export default function Dashboard(props) {
         });
     };
 
-    useEffect(() => {
-        if (!props.myNews) {
-            router.get(route("news.show"));
-        }
-    }, []);
+    const availMyNews = (props) => {
+        return props.myNews.map((data, i) => {
+            return (
+                <div
+                    key={i}
+                    className="card w-full lg:w-96 bg-base-100 shadow-xl"
+                >
+                    <div className="card-body">
+                        <h2 className="card-title">
+                            {data.title}
+                            <div className="badge badge-primary">NEW</div>
+                        </h2>
+                        <p>{data.description}</p>
+                        <div className="card-actions justify-end">
+                            <button className="badge badge-success badge-outline">
+                                edit
+                            </button>
+                            <button className="badge badge-error badge-outline">
+                                delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        });
+    };
+
+    const unavailableNews = () => {
+        return (
+            <div className="text-black text-center">Berita tidak tersedia</div>
+        );
+    };
+
+    // useEffect(() => {
+    //     if (!props.myNews) {
+    //         router.get(route("news.show"));
+    //     }
+    // }, []);
     return (
         <AuthenticatedLayout
             user={props.auth.user}
@@ -63,9 +97,8 @@ export default function Dashboard(props) {
             }
         >
             <Head title="Dashboard" />
-
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             {notif && (
@@ -89,7 +122,10 @@ export default function Dashboard(props) {
                                     <span>{props.flash.message}</span>
                                 </div>
                             )}
-                            <form onSubmit={handleSubmit}>
+                            <form
+                                className="flex flex-col justify-center items-center"
+                                onSubmit={handleSubmit}
+                            >
                                 <input
                                     type="text"
                                     name="title"
@@ -114,14 +150,28 @@ export default function Dashboard(props) {
                                     onChange={handleInput}
                                     className="m-2 input input-bordered w-full"
                                 />
-                                <button
-                                    type="submit"
-                                    className="btn btn-success  btn-md m-2"
-                                >
-                                    Submit
-                                </button>
+                                <div className="flex justify-start items-start w-full">
+                                    <button
+                                        type="submit"
+                                        className="btn btn-outline btn-success   btn-sm"
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
                             </form>
                         </div>
+                    </div>
+
+                    <div className="flex justify-center items-center my-5">
+                        <div className="text-center timeline-end timeline-box">
+                            {props.myNews.length > 0
+                                ? "Daftar Berita Anda"
+                                : "Anda Belum Upload Berita"}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center flex-col lg:flex-row lg:flex-wrap lg:items-stretch items-center lg:px-0 px-6 gap-4">
+                        {availMyNews(props)}
                     </div>
                 </div>
             </div>
