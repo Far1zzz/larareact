@@ -70,7 +70,6 @@ class NewsController extends Controller
 
         // dd($myNews);
         return Inertia::render('Dashboard', [
-            'title' => 'Dashboard',
             'myNews' => $myNews
         ]);
     }

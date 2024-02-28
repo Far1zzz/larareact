@@ -22,13 +22,13 @@ Route::get('/', [NewsController::class, 'index']);
 
 
 Route::group(['middleware' => ['auth', 'verified']], function () {
-    Route::get('/dashboard', [NewsController::class, 'show'])->name('dashboard');
+    Route::get('/news', [NewsController::class, 'show'])->name('news.show');
     Route::post('/news', [NewsController::class, 'store'])->name('news.store');
 });
 
-// Route::get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
