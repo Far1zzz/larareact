@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\NewsCollection;
 use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class NewsController extends Controller
@@ -36,7 +37,28 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator =  Validator::make($request->all(), [
+            'title' => 'required',
+            'description' => 'required',
+            'category' => 'required',
+            'email' =>  'email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => $validator->errors(),
+            ], 400);
+        }
+
+        $news = new News;
+        $news->title = $request->input('title');
+        $news->description = $request->input('description');
+        $news->category = $request->input('category');
+        $news->author = auth()->user()->email;
+        $news->save();
+
+
+        return redirect()->back()->with('message', 'Berita Berhasil Dibuat');
     }
 
     /**
@@ -44,7 +66,13 @@ class NewsController extends Controller
      */
     public function show(News $news)
     {
-        //
+        $myNews = $news::where('author', auth()->user()->email)->get();
+
+        // dd($myNews);
+        return Inertia::render('Dashboard', [
+            'title' => 'Dashboard',
+            'myNews' => $myNews
+        ]);
     }
 
     /**
