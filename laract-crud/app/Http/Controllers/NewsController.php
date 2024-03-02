@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\NewsCollection;
 use App\Models\News;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
@@ -68,9 +70,13 @@ class NewsController extends Controller
     {
         $myNews = $news::where('author', auth()->user()->email)->get();
 
-        // dd($myNews);
+        $encryptId = [];
+        foreach ($myNews as $newsItem) {
+            $encryptId[] = encrypt($newsItem->id);
+        }
         return Inertia::render('Dashboard', [
-            'myNews' => $myNews
+            'myNews' => $myNews,
+            'encId' => $encryptId
         ]);
     }
 
@@ -93,8 +99,13 @@ class NewsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(News $news)
+    public function destroy(Request $request)
     {
-        //
+        $decrypt = decrypt($request->id);
+        $news = News::find($decrypt);
+        $news->delete();
+
+
+        return redirect()->back()->with('message', 'Berita berhasil di hapus');
     }
 }

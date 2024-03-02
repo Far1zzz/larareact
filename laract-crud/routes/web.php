@@ -24,6 +24,7 @@ Route::get('/', [NewsController::class, 'index']);
 Route::group(['middleware' => ['auth', 'verified']], function () {
     Route::get('/dashboard', [NewsController::class, 'show'])->name('dashboard');
     Route::post('/news', [NewsController::class, 'store'])->name('news.store');
+    Route::post('/news/delete', [NewsController::class, 'destroy'])->name('delete.news');
 });
 
 // Route::get('/dashboard', function () {

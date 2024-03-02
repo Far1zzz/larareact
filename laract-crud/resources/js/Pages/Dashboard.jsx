@@ -1,10 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Dashboard(props) {
-    const newsList = props.myNews;
-    console.log(newsList);
+    // console.log(props);
     const [input, setInput] = useState({
         title: "",
         category: "",
@@ -49,7 +48,20 @@ export default function Dashboard(props) {
         });
     };
 
+    const handleDelete = async (id) => {
+        // console.log(id);
+        try {
+            await router.post(route("delete.news", { id }));
+            setNotif(true);
+            resetNotif();
+        } catch (error) {
+            console.error("Gagal menghapus berita", error);
+        }
+    };
+
     const availMyNews = (props) => {
+        const id = props.encId;
+
         return props.myNews.map((data, i) => {
             return (
                 <div
@@ -66,7 +78,12 @@ export default function Dashboard(props) {
                             <button className="badge badge-success badge-outline">
                                 edit
                             </button>
-                            <button className="badge badge-error badge-outline">
+
+                            <button
+                                className="badge badge-error badge-outline"
+                                // onClick={() => coba(data.id)}
+                                onClick={() => handleDelete(id[i])}
+                            >
                                 delete
                             </button>
                         </div>
